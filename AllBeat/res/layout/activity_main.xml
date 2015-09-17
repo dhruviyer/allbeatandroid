@@ -1,0 +1,55 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:gravity="bottom"
+    android:orientation="vertical"
+    android:paddingBottom="0dp"
+    android:paddingLeft="0dp"
+    android:paddingRight="0dp"
+    android:paddingTop="0dp"
+    tools:context="co.allbeat.app.MainActivity" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.35" >
+
+        <Button 
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#0000"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.25" >
+
+        <Button
+            android:id="@+id/discoverbttn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/discoverbttn"
+            android:onClick="startPlaying" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.25" >
+
+        <Button
+            android:id="@+id/leadersbttn"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="#80000000"
+            android:backgroundTint="#FFFFFF"
+            android:text="@string/comingSoon" />
+
+    </RelativeLayout>
+
+</LinearLayout>
