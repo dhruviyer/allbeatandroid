@@ -44,8 +44,8 @@ public class PlayActivity extends Activity {
         }
  
   
-        //new HttpAsyncTask().execute("http://hmkcode.com/examples/index.php");
-        new HttpAsyncTask().execute("http://api.allbeat.co/api/songs/random");
+        new HttpAsyncTask().execute("http://hmkcode.com/examples/index.php");
+        //new HttpAsyncTask().execute("http://api.allbeat.co/api/songs/random");
     }
  
     public static String GET(String url){
