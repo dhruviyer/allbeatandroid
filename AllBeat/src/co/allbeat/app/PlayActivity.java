@@ -1,70 +1,111 @@
 package co.allbeat.app;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.app.Activity;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 @SuppressWarnings("deprecation")
 public class PlayActivity extends Activity {
-	Button playButton;
-	TextView tv;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_play);
-
-		playButton = (Button) findViewById(R.id.playButton);
-		tv = (TextView) findViewById(R.id.textView1);
-
-		playButton.setOnClickListener(new OnClickListener() {
-
-			public void onClick(View v) {
-				// ALERT MESSAGE
-				Handler m = new Handler(Looper.getMainLooper());
-				
-				Runnable r = new Runnable() {
-					public void run() {
-
-						Toast.makeText(getBaseContext(),
-								"Please wait, connecting to server.",
-								Toast.LENGTH_LONG).show();
-
-						HttpClient Client = new DefaultHttpClient();
-						String URL = "http://api.allbeat.co/songs/random";
-						Log.i("httpget", URL);
-						try {
-							String SetServerString = "";
-							HttpGet httpget = new HttpGet(URL);
-							ResponseHandler<String> responseHandler = new BasicResponseHandler();
-							SetServerString = Client.execute(httpget,
-									responseHandler);
-							tv.setText(SetServerString);
-
-						} catch (Exception ex) {
-							tv.setText("Fail!");
-							Log.e("error", "Darn", ex);
-						}
-					}
-				};
-				m.post(r);
-				
-				
-			}
-		});
-
-	}
+	EditText etResponse;
+    TextView tvIsConnected;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_play);
+ 
+        // get reference to the views
+        etResponse = (EditText) findViewById(R.id.etResponse);
+        tvIsConnected = (TextView) findViewById(R.id.tvIsConnected);
+ 
+        // check if you are connected or not
+        if(isConnected()){
+            tvIsConnected.setBackgroundColor(0xFF00CC00);
+            tvIsConnected.setText("You are conncted");
+        }
+        else{
+            tvIsConnected.setText("You are NOT conncted");
+        }
+ 
+  
+        //new HttpAsyncTask().execute("http://hmkcode.com/examples/index.php");
+        new HttpAsyncTask().execute("http://api.allbeat.co/api/songs/random");
+    }
+ 
+    public static String GET(String url){
+        InputStream inputStream = null;
+        String result = "";
+        try {
+ 
+            // create HttpClient
+            HttpClient httpclient = new DefaultHttpClient();
+ 
+            // make GET request to the given URL
+            HttpResponse httpResponse = httpclient.execute(new HttpGet(url));
+ 
+            // receive response as inputStream
+            inputStream = httpResponse.getEntity().getContent();
+ 
+            // convert inputstream to string
+            if(inputStream != null)
+                result = convertInputStreamToString(inputStream);
+            else
+                result = "Did not work!";
+ 
+        } catch (Exception e) {
+            Log.d("InputStream", e.getLocalizedMessage());
+        }
+ 
+        return result;
+    }
+ 
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException{
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line = "";
+        String result = "";
+        while((line = bufferedReader.readLine()) != null)
+            result += line;
+ 
+        inputStream.close();
+        return result;
+ 
+    }
+ 
+    public boolean isConnected(){
+        ConnectivityManager connMgr = (ConnectivityManager) getSystemService(this.CONNECTIVITY_SERVICE);
+            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+            if (networkInfo != null && networkInfo.isConnected()) 
+                return true;
+            else
+                return false;   
+    }
+    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+ 
+            return GET(urls[0]);
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            Toast.makeText(getBaseContext(), "Received!", Toast.LENGTH_LONG).show();
+            etResponse.setText(result);
+       }
+    }
 }
