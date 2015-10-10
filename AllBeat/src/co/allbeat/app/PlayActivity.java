@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -15,26 +17,28 @@ import android.app.Activity;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
+import android.media.session.MediaController;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 @SuppressWarnings("deprecation")
 public class PlayActivity extends Activity {
 
 	static EditText etResponse;
-	TextView tvIsConnected;
 	static String trackURL;
 	Button playBttn;
 	static MediaPlayer mPlayer;
+	ProgressBar mediaseek;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -42,30 +46,20 @@ public class PlayActivity extends Activity {
 		setContentView(R.layout.activity_play);
 
 		// get reference to the views
-		etResponse = (EditText) findViewById(R.id.etResponse);
-		tvIsConnected = (TextView) findViewById(R.id.tvIsConnected);
-		playBttn = (Button) findViewById(R.id.button1);
-		mPlayer = new MediaPlayer();
-
-		// check if you are connected or not
-		if (isConnected()) {
-			tvIsConnected.setBackgroundColor(0xFF00CC00);
-			tvIsConnected.setText("You are conncted");
-		} else {
-			tvIsConnected.setText("You are NOT conncted");
-		}
-
-		// new HttpAsyncTask().execute("http://hmkcode.com/examples/index.php");
+		playBttn = (Button) findViewById(R.id.playbttn);
+		
 		playBttn.setOnClickListener(new OnClickListener() {
-
+			
 			@Override
 			public void onClick(View v) {
-				new HttpAsyncTask().execute("http://104.131.11.1/songs/random");
+				try{
+						AsyncTask<String, Void, String> task = new HttpAsyncTask().execute("http://104.131.11.1/songs/random");					
+				}catch(Exception e){}
+
 			}
 		});
-
 	}
-
+	
 	public static String GET(String url) {
 		InputStream inputStream = null;
 		String result = "";
@@ -92,17 +86,16 @@ public class PlayActivity extends Activity {
 
 		try {
 			JSONObject jObject = new JSONObject(result);
-			trackURL = jObject.getString("track_url");
+			trackURL = jObject.getString("allbeat_url");
 		} catch (Exception e) {
 		}
 
 		Log.d("OBJECT", trackURL);
-		//playSong(trackURL);
-		playSong("https://ia800309.us.archive.org/19/items/rocknrollrampage233/rocknrollrampage233.mp3");
 		return result;
 	}
 
 	private static void playSong(String url) {
+		mPlayer = new MediaPlayer();
 		mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
 		
 		try {
@@ -114,10 +107,26 @@ public class PlayActivity extends Activity {
 			
 			@Override
 			public void onPrepared(MediaPlayer mp) {
-				// TODO Auto-generated method stub
+				mPlayer.seekTo(20000);
 				mPlayer.start();
+				CountDownTimer timer = new CountDownTimer(11000,1000) {
+					
+					@Override
+					public void onTick(long millisUntilFinished) {
+						// TODO Auto-generated method stub
+						
+					}
+					
+					@Override
+					public void onFinish() {
+						mPlayer.stop();
+						mPlayer.release();
+						AsyncTask<String, Void, String> task = new PlayActivity().new HttpAsyncTask().execute("http://104.131.11.1/songs/random");
+					}
+				}.start();
 			}
 		});
+		
 	}
 
 	private static String convertInputStreamToString(InputStream inputStream)
@@ -146,17 +155,13 @@ public class PlayActivity extends Activity {
 	private class HttpAsyncTask extends AsyncTask<String, Void, String> {
 		@Override
 		protected String doInBackground(String... urls) {
-
 			return GET(urls[0]);
 		}
 
 		// onPostExecute displays the results of the AsyncTask.
 		@Override
 		protected void onPostExecute(String result) {
-			Toast.makeText(getBaseContext(), "Received!", Toast.LENGTH_LONG)
-					.show();
-			// etResponse.setText(result);
-
+				playSong(trackURL);
 		}
 	}
 }
