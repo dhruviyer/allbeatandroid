@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background" >
+    android:background="#000000" >
 
     <Button
         android:id="@+id/playbttn"
@@ -13,11 +13,13 @@
         android:layout_marginBottom="152dp"
         android:text="Play" />
 
-    <ProgressBar
-        android:id="@+id/progressBar1"
-        style="?android:attr/progressBarStyleHorizontal"
+    <Button
+        android:id="@+id/skip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true" />
+        android:layout_above="@+id/playbttn"
+        android:layout_alignLeft="@+id/playbttn"
+        android:layout_marginBottom="14dp"
+        android:text="Skip" />
 
 </RelativeLayout>

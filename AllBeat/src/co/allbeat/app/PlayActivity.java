@@ -37,8 +37,9 @@ public class PlayActivity extends Activity {
 	static EditText etResponse;
 	static String trackURL;
 	Button playBttn;
+	Button skipBttn;
 	static MediaPlayer mPlayer;
-	ProgressBar mediaseek;
+	static boolean skip = false;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,15 @@ public class PlayActivity extends Activity {
 
 		// get reference to the views
 		playBttn = (Button) findViewById(R.id.playbttn);
+		skipBttn = (Button) findViewById(R.id.skip);
+		
+		skipBttn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				skip = true;
+			}
+		});
 		
 		playBttn.setOnClickListener(new OnClickListener() {
 			
@@ -114,7 +124,12 @@ public class PlayActivity extends Activity {
 					@Override
 					public void onTick(long millisUntilFinished) {
 						// TODO Auto-generated method stub
-						
+						if(skip){
+							skip = false;
+							mPlayer.stop();
+							mPlayer.release();
+							AsyncTask<String, Void, String> task = new PlayActivity().new HttpAsyncTask().execute("http://104.131.11.1/songs/random");
+						}
 					}
 					
 					@Override

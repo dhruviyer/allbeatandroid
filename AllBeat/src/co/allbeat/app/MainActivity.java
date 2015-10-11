@@ -4,8 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.widget.ImageView;
 
 /**
  * 
@@ -15,8 +14,7 @@ import android.widget.Button;
  *
  */
 public class MainActivity extends Activity{
-	Button leadersButton;
-	Button discoverButton;
+	ImageView discoverButton;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +22,7 @@ public class MainActivity extends Activity{
 		setContentView(R.layout.activity_main);
 		
 		//initialize buttons
-		leadersButton = (Button) findViewById(R.id.leadersbttn);
-		discoverButton = (Button) findViewById(R.id.discoverbttn);
-		
+		discoverButton = (ImageView) findViewById(R.id.discover);
 		
 	}
 	
